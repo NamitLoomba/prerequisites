@@ -6,14 +6,15 @@ import joblib
 import numpy as np
 import os
 
-# TensorFlow imports
+# TensorFlow imports - make it optional
+TENSORFLOW_AVAILABLE = False
 try:
     import tensorflow as tf
     from ml.sequence_model import load_sequence_model
     TENSORFLOW_AVAILABLE = True
-except ImportError:
-    TENSORFLOW_AVAILABLE = False
-    st.warning("TensorFlow not available. LSTM model will be disabled.")
+except Exception as e:
+    # Silently fail - TensorFlow is optional
+    pass
 
 st.set_page_config(page_title='Pre-Delinquency Risk Platform', page_icon='🛡️', layout='wide')
 
@@ -22,29 +23,33 @@ COLORS = {'Critical':'#FF4B4B','High':'#FFA500','Medium':'#FFD700','Low':'#4CAF5
 @st.cache_resource
 def load_models():
     """Load all ML models"""
+    models = {}
+    
     try:
-        models = {
-            'xgboost': {
-                'model': joblib.load('ml/model.pkl'),
-                'scaler': joblib.load('ml/scaler.pkl')
-            },
-            'lightgbm': {
-                'model': joblib.load('ml/model_lgb.pkl'),
-                'scaler': joblib.load('ml/scaler_lgb.pkl')
-            }
+        models['xgboost'] = {
+            'model': joblib.load('ml/model.pkl'),
+            'scaler': joblib.load('ml/scaler.pkl')
         }
-        
-        # Try to load TensorFlow LSTM model
-        if TENSORFLOW_AVAILABLE:
-            try:
-                models['lstm'] = load_sequence_model('ml/sequence_model.h5', 'ml/sequence_scaler.pkl')
-            except Exception as e:
-                st.warning(f"LSTM model not available: {e}")
-        
-        return models
     except Exception as e:
-        st.error(f"Error loading models: {e}")
-        return None
+        st.error(f"Error loading XGBoost: {e}")
+    
+    try:
+        models['lightgbm'] = {
+            'model': joblib.load('ml/model_lgb.pkl'),
+            'scaler': joblib.load('ml/scaler_lgb.pkl')
+        }
+    except Exception as e:
+        st.error(f"Error loading LightGBM: {e}")
+    
+    # Try to load TensorFlow LSTM model (optional)
+    if TENSORFLOW_AVAILABLE:
+        try:
+            models['lstm'] = load_sequence_model('ml/sequence_model.h5', 'ml/sequence_scaler.pkl')
+        except Exception as e:
+            # Silently skip LSTM if it fails
+            pass
+    
+    return models if models else None
 
 def create_features(data):
     """Engineer features from raw inputs"""
@@ -473,7 +478,13 @@ elif page == '📊 Portfolio Overview':
         try:
             # Try different possible paths for the sample data
             df = None
-            for path in ['data/raw/synthetic_transactions.csv', 'synthetic_transactions.csv']:
+            sample_paths = [
+                'data/raw/synthetic_transactions.csv',
+                'synthetic_transactions.csv',
+                'data/synthetic_transactions.csv'
+            ]
+            
+            for path in sample_paths:
                 try:
                     df = pd.read_csv(path).head(50)
                     st.success(f"✅ Loaded {len(df)} sample customers")
@@ -482,7 +493,8 @@ elif page == '📊 Portfolio Overview':
                     continue
             
             if df is None:
-                st.error('Sample data file not found. Please upload your own CSV file.')
+                st.warning('⚠️ Sample data file not found. Please upload your own CSV file.')
+                st.info('You can create a CSV with the format shown below and upload it.')
                 process_portfolio = False
             else:
                 process_portfolio = True
