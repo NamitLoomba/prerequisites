@@ -1,0 +1,185 @@
+================================================================================
+COPY-PASTE COMMANDS FOR NAMIT LOOMBA
+Streamlit Cloud Deployment
+================================================================================
+
+STEP 1: TEST LOCALLY
+--------------------
+pip install -r requirements_streamlit.txt
+streamlit run streamlit_app.py
+
+
+STEP 2: INITIALIZE GIT
+-----------------------
+git init
+
+
+STEP 3: ADD FILES
+-----------------
+git add streamlit_app.py
+git add requirements_streamlit.txt
+git add .streamlit/config.toml
+git add .gitignore
+git add ml/model.pkl
+git add ml/scaler.pkl
+git add ml/model_lgb.pkl
+git add ml/scaler_lgb.pkl
+git add ml/sequence_model.h5
+git add ml/sequence_scaler.pkl
+git add ml/sequence_model.py
+git add ml/__init__.py
+git add data/raw/synthetic_transactions.csv
+
+
+STEP 4: COMMIT
+--------------
+git commit -m "Deploy to Streamlit Cloud"
+
+
+STEP 5: ADD REMOTE (CHANGE REPO NAME IF NEEDED)
+------------------------------------------------
+git remote add origin https://github.com/NamitLoomba/predeliquency-risk.git
+
+
+STEP 6: SET BRANCH
+------------------
+git branch -M main
+
+
+STEP 7: PUSH TO GITHUB
+----------------------
+git push -u origin main
+
+
+STEP 8: DEPLOY ON STREAMLIT CLOUD
+----------------------------------
+1. Go to: https://share.streamlit.io/
+2. Sign in with GitHub
+3. Click "New app"
+4. Repository: NamitLoomba/predeliquency-risk
+5. Branch: main
+6. Main file: streamlit_app.py
+7. Click "Deploy"
+
+
+YOUR APP URL WILL BE:
+---------------------
+https://namitloomba-predeliquency-risk.streamlit.app
+
+
+================================================================================
+BACKUP: LOCAL DEMO COMMANDS
+================================================================================
+
+TERMINAL 1 (Backend):
+---------------------
+python backend/main.py
+
+
+TERMINAL 2 (Frontend):
+----------------------
+python -m streamlit run frontend/dashboard.py
+
+
+OPEN IN BROWSER:
+----------------
+http://localhost:8501
+
+
+================================================================================
+TROUBLESHOOTING
+================================================================================
+
+If port 8000 is busy:
+---------------------
+netstat -ano | findstr :8000
+taskkill /PID <NUMBER> /F
+
+
+If streamlit not found:
+-----------------------
+python -m streamlit run streamlit_app.py
+
+
+Check if files exist:
+---------------------
+dir streamlit_app.py
+dir requirements_streamlit.txt
+dir ml\*.pkl
+
+
+================================================================================
+GITHUB PERSONAL ACCESS TOKEN
+================================================================================
+
+If GitHub asks for password, use Personal Access Token:
+
+1. Go to: https://github.com/settings/tokens
+2. Click "Generate new token (classic)"
+3. Name: "Streamlit Deployment"
+4. Select scope: repo (check the box)
+5. Click "Generate token"
+6. Copy the token
+7. Use as password when git asks
+
+
+================================================================================
+DEMO SCRIPT FOR JUDGES
+================================================================================
+
+1. "Our app is live at: https://namitloomba-predeliquency-risk.streamlit.app"
+
+2. "We built 2 ML models: XGBoost and LightGBM"
+
+3. "Let me show a high-risk customer:"
+   - Salary Delay: 7 days
+   - Savings Drop: 50%
+   - Failed Auto-debits: 3
+   - Click "Analyze Risk"
+
+4. "85% risk score - Critical level"
+
+5. "Now compare both models:"
+   - Select "Compare Both Models"
+   - Click "Analyze Risk"
+
+6. "Both models agree - immediate intervention needed"
+
+
+================================================================================
+CHECKLIST
+================================================================================
+
+Before GitHub:
+[ ] streamlit_app.py exists
+[ ] requirements_streamlit.txt exists
+[ ] .streamlit/config.toml exists
+[ ] ml/model.pkl exists
+[ ] ml/scaler.pkl exists
+[ ] ml/model_lgb.pkl exists
+[ ] ml/scaler_lgb.pkl exists
+
+After Deployment:
+[ ] App loads without errors
+[ ] XGBoost works
+[ ] LightGBM works
+[ ] Model comparison works
+[ ] URL shared with team
+
+
+================================================================================
+REPOSITORY NAMES (CHOOSE ONE)
+================================================================================
+
+Option 1: predeliquency-risk
+Option 2: ai-risk-platform
+Option 3: delinquency-predictor
+Option 4: risk-detection-ml
+Option 5: early-warning-system
+
+Replace in commands above if you choose different name!
+
+
+================================================================================
+END OF COMMANDS
+================================================================================

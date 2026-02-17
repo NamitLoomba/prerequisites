@@ -44,9 +44,9 @@ wheels/
 .DS_Store
 Thumbs.db
 
-# Data (keep models but ignore large datasets)
-data/raw/*.csv
-data/processed/*.csv
+# Data (keep models and CSV files for deployment)
+# data/raw/*.csv
+# data/processed/*.csv
 
 # Logs
 *.log

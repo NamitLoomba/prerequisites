@@ -1,0 +1,9 @@
+# Feature Store Configuration
+project: predeliquency
+registry: data/feature_store/registry.db
+provider: local
+online_store:
+    type: redis
+    connection_string: "localhost:6379"
+    redis_type: redis
+entity_key_serialization_version: 2
