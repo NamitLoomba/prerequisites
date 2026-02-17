@@ -1,9 +1,14 @@
-# Lightweight requirements - No TensorFlow
+# Core ML libraries
 xgboost>=2.0.0
 lightgbm>=4.0.0
 scikit-learn>=1.3.0
 pandas>=2.0.0
 numpy>=1.24.0
 joblib>=1.3.0
+
+# Streamlit and visualization
 streamlit>=1.30.0
 plotly>=5.18.0
+
+# TensorFlow (optional - for sequence model)
+tensorflow>=2.15.0

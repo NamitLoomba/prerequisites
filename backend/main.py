@@ -4,7 +4,8 @@ import uvicorn
 import sys
 import os
 
-sys.path.insert(0, os.getcwd())
+# Add parent directory to path so imports work
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from backend.schemas import RiskInput, RiskOutput, BatchRiskInput, BatchRiskOutput, ComparisonOutput, SequenceRiskInput
 from backend.risk_engine import risk_engine
