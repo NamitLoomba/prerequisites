@@ -1,9 +1,16 @@
 ﻿from ml.predict import RiskPredictor
 from ml.predict_lightgbm import LightGBMRiskPredictor
-from ml.sequence_model import SequenceRiskPredictor
 from typing import Dict
 import os
 import numpy as np
+
+# Make TensorFlow/LSTM optional
+try:
+    from ml.sequence_model import SequenceRiskPredictor
+    TENSORFLOW_AVAILABLE = True
+except ImportError:
+    TENSORFLOW_AVAILABLE = False
+    SequenceRiskPredictor = None
 
 class RiskEngine:
     """Risk scoring engine that wraps all ML models."""
@@ -37,14 +44,17 @@ class RiskEngine:
         except Exception as e:
             print(f"⚠️ Warning: Could not load LightGBM model: {e}")
         
-        # Load LSTM Sequence Model
-        try:
-            model_path = os.path.join(base_dir, "ml", "sequence_model.h5")
-            scaler_path = os.path.join(base_dir, "ml", "sequence_scaler.pkl")
-            self.lstm_predictor = SequenceRiskPredictor(model_path, scaler_path)
-            print("✅ TensorFlow LSTM model loaded successfully")
-        except Exception as e:
-            print(f"⚠️ Warning: Could not load LSTM model: {e}")
+        # Load LSTM Sequence Model (optional - requires TensorFlow)
+        if TENSORFLOW_AVAILABLE:
+            try:
+                model_path = os.path.join(base_dir, "ml", "sequence_model.h5")
+                scaler_path = os.path.join(base_dir, "ml", "sequence_scaler.pkl")
+                self.lstm_predictor = SequenceRiskPredictor(model_path, scaler_path)
+                print("✅ TensorFlow LSTM model loaded successfully")
+            except Exception as e:
+                print(f"⚠️ Warning: Could not load LSTM model: {e}")
+        else:
+            print("⚠️ TensorFlow not available - LSTM model disabled")
         
         if not self.xgb_predictor and not self.lgb_predictor and not self.lstm_predictor:
             print("⚠️ Risk engine will work in demo mode")
