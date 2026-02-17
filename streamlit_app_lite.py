@@ -2,30 +2,45 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-import joblib
 import numpy as np
+import sys
+import os
 
 st.set_page_config(page_title='Pre-Delinquency Risk Platform', page_icon='🛡️', layout='wide')
+
+# Debug info
+st.sidebar.write(f"Python: {sys.version}")
+st.sidebar.write(f"Working dir: {os.getcwd()}")
+st.sidebar.write(f"Files in ml/: {os.listdir('ml') if os.path.exists('ml') else 'ml folder not found'}")
 
 COLORS = {'Critical':'#FF4B4B','High':'#FFA500','Medium':'#FFD700','Low':'#4CAF50'}
 
 @st.cache_resource
 def load_models():
     """Load XGBoost and LightGBM models only"""
+    import joblib
     models = {}
     try:
         models['xgboost'] = {
             'model': joblib.load('ml/model.pkl'),
             'scaler': joblib.load('ml/scaler.pkl')
         }
+        st.sidebar.success("✅ XGBoost loaded")
+    except Exception as e:
+        st.sidebar.error(f"XGBoost error: {e}")
+        return None
+    
+    try:
         models['lightgbm'] = {
             'model': joblib.load('ml/model_lgb.pkl'),
             'scaler': joblib.load('ml/scaler_lgb.pkl')
         }
-        return models
+        st.sidebar.success("✅ LightGBM loaded")
     except Exception as e:
-        st.error(f"Error loading models: {e}")
+        st.sidebar.error(f"LightGBM error: {e}")
         return None
+    
+    return models
 
 def create_features(data):
     """Engineer features from raw inputs"""
@@ -67,12 +82,15 @@ st.title('🛡️ AI-Powered Pre-Delinquency Risk Platform')
 st.markdown('### Early Intervention System for Financial Risk Management')
 
 # Load models
-models = load_models()
-if models is None:
-    st.error("Failed to load models. Please check model files.")
+try:
+    models = load_models()
+    if models is None:
+        st.error("Failed to load models. Check sidebar for details.")
+        st.stop()
+    st.success("✅ Models Loaded | XGBoost: ✓ | LightGBM: ✓")
+except Exception as e:
+    st.error(f"Critical error loading models: {e}")
     st.stop()
-
-st.success("✅ Models Loaded | XGBoost: ✓ | LightGBM: ✓")
 
 page = st.sidebar.radio('Navigation', ['🎯 Risk Prediction','📊 Portfolio Overview','ℹ️ About'])
 
